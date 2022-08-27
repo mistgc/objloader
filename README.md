@@ -31,7 +31,7 @@ pub struct Material {
     Ni:         f32,            /* Index of refraction */
     Tf:         [f32; 3],       /* Transmission filter */
     d:          f32,            /* Disolve (alpha) */
-    illum:      i32             /* Illumination model */
+    illum:      i32,            /* Illumination model */
 
     /* Texture maps */
     map_Ka:     Texture,
