@@ -1,10 +1,8 @@
-# OBJ Loader
+#![allow(dead_code)]
+#![allow(non_snake_case)]
 
-## Data Structure
+use crate::common;
 
-### OBJ Texture
-
-```rust
 pub struct Texture {
     /* Texture name from .mtl file */
     name:                   String,
@@ -12,11 +10,7 @@ pub struct Texture {
     /* Resolved path to texture */
     path:                   String,
 }
-```
 
-### OBJ Material
-
-```rust
 pub struct Material {
     /* Material name */
     name:                   String,
@@ -44,19 +38,13 @@ pub struct Material {
     map_d:                  Texture,
     map_bump:               Texture,
 }
-```
 
-### OBJ Index
-```rust
 pub struct Index {
     p:                      u32,
     t:                      u32,
     n:                      u32,
 }
-```
 
-### OBJ Group
-```rust
 pub struct Group {
     /* Group name */
     name:                   String,
@@ -70,10 +58,7 @@ pub struct Group {
     /* First index in Mesh indices array */
     index_offset:           u32,
 }
-```
 
-### OBJ Mesh
-```rust
 pub struct Mesh {
     /* Vertex data */
     position_count:         u32,
@@ -106,4 +91,3 @@ pub struct Mesh {
     group_count:            u32,
     groups:                 Vec<Group>,
 }
-```
