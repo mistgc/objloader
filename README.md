@@ -1,5 +1,7 @@
 # OBJ Loader
 
+A .obj/.mtl file parser from scratch for Rust.
+
 ## Data Structure
 
 ### OBJ Texture
@@ -107,3 +109,8 @@ pub struct Mesh {
     groups:                 Vec<Group>,
 }
 ```
+
+## References
+
+[Parsing OBJ Files](https://www.genericgamedev.com/general/design-patterns-in-game-development-parsing-obj-files)
+ \- Design patterns in game development: parsing OBJ files
