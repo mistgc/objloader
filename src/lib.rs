@@ -1,7 +1,8 @@
-mod util;
+mod utils;
 mod objloader;
 mod error;
-pub mod common;
+mod common;
+mod raw;
 
 pub use crate::objloader::*;
 

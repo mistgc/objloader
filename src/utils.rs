@@ -1,4 +1,7 @@
+use std::slice;
+
 use crate::error::Error;
+use crate::raw::*;
 
 pub trait MoreCharMethod {
     fn is_end_of_name(&self) -> bool;
@@ -136,3 +139,17 @@ impl MoreStrMethod for Vec<u8> {
         Ok(line)
     }
 }
+
+pub fn parse_vertex(line: Vec<u8>) -> Result<Vec<f32>, Error> {
+    let mut vertex = vec![];
+    let strings = String::from_utf8(line.clone())?;
+    let string: Vec<&str> = strings.split(' ').collect();
+    vertex.push(string[1].parse()?);
+    vertex.push(string[2].parse()?);
+    vertex.push(string[3].parse()?);
+    Ok(vertex)
+}
+
+// TODO:
+// pub fn parse_face() -> Result<Vec<u8>, Error> {
+// }

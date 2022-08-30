@@ -1,12 +1,7 @@
-# OBJ Loader
+#[allow(dead_code)]
+#[allow(non_snake_case)]
+#[allow(unused)]
 
-A .obj/.mtl file parser from scratch for Rust.
-
-## Data Structure
-
-### OBJ Texture
-
-```rust
 pub struct Texture {
     /* Texture name from .mtl file */
     name:                   String,
@@ -14,11 +9,7 @@ pub struct Texture {
     /* Resolved path to texture */
     path:                   String,
 }
-```
 
-### OBJ Material
-
-```rust
 pub struct Material {
     /* Material name */
     name:                   String,
@@ -46,19 +37,13 @@ pub struct Material {
     map_d:                  Texture,
     map_bump:               Texture,
 }
-```
 
-### OBJ Index
-```rust
 pub struct Index {
-    p:                      u32,
+    v:                      u32,
     t:                      u32,
     n:                      u32,
 }
-```
 
-### OBJ Group
-```rust
 pub struct Group {
     /* Group name */
     name:                   String,
@@ -72,48 +57,3 @@ pub struct Group {
     /* First index in Mesh indices array */
     index_offset:           u32,
 }
-```
-
-### OBJ Mesh
-```rust
-pub struct Mesh {
-    /* Vertex data */
-    position_count:         u32,
-    positions:              Vec<f32>,
-
-    texcoord_count:         u32,
-    texcoords:              Vec<f32>,
-
-    normal_count:           u32,
-    normals:                Vec<f32>,
-
-    /* Face data: one element for each face */
-    face_count:             u32,
-    face_vertices:          Vec<u32>,
-    face_materials:         Vec<u32>,
-
-    /* Index data: one element for each face vertex */
-    index_count:            u32,
-    indices:                Vec<Index>,
-
-    /* Materials */
-    material_count:         u32,
-    materials:              Vec<Material>,
-
-    /* Mesh objects ('0' tag in .obj file) */
-    object_count:           u32,
-    objects:                Vec<Group>,
-
-    /* Mesh groups ('g' tag in .obj file) */
-    group_count:            u32,
-    groups:                 Vec<Group>,
-}
-```
-
-## References
-
-[Parsing OBJ Files](https://www.genericgamedev.com/general/design-patterns-in-game-development-parsing-obj-files)
- \- Design patterns in game development: parsing OBJ files
-
-[OBJ FILE FORMAT](https://www.cs.cmu.edu/~mbz/personal/graphics/obj.html)
- \- This document leaves out all non- Poser usable commands and options so you aren't confused about things you'll never need. 
