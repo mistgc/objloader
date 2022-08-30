@@ -1,4 +1,5 @@
 use crate::utils::{ self, MoreStrMethod };
+use crate::raw;
 
 #[test]
 fn read_line() {
@@ -37,4 +38,22 @@ fn parse_position() {
     let line: Vec<u8> = "vt 3.0 4.0 5.0".try_into().unwrap();
     let vertex = utils::parse_vertex(line).unwrap();
     assert_eq!(vec![3.0, 4.0, 5.0], vertex);
+}
+
+#[test]
+fn parse_face() {
+    let line: Vec<u8> = "f 1/1/1 2/2/2 3/3/3".try_into().unwrap();
+    let result = utils::parse_face(line).unwrap();
+    assert_eq!(raw::Index::new(1, 1, 1), result.0[0]);
+    assert_eq!(raw::Index::new(2, 2, 2), result.0[1]);
+    assert_eq!(raw::Index::new(3, 3, 3), result.0[2]);
+    assert_eq!(3, result.1);
+
+    let line: Vec<u8> = "f 1/1 2/2 3/3 4/4".try_into().unwrap();
+    let result = utils::parse_face(line).unwrap();
+    assert_eq!(raw::Index::new(1, 1, 0), result.0[0]);
+    assert_eq!(raw::Index::new(2, 2, 0), result.0[1]);
+    assert_eq!(raw::Index::new(3, 3, 0), result.0[2]);
+    assert_eq!(raw::Index::new(4, 4, 0), result.0[3]);
+    assert_eq!(4, result.1);
 }

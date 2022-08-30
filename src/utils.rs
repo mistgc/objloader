@@ -1,4 +1,4 @@
-use std::slice;
+#[allow(dead_code)]
 
 use crate::error::Error;
 use crate::raw::*;
@@ -140,6 +140,9 @@ impl MoreStrMethod for Vec<u8> {
     }
 }
 
+/*
+ * Takes data of line and returns the Vec data '[x, y, z]' for the vertex.
+ */
 pub fn parse_vertex(line: Vec<u8>) -> Result<Vec<f32>, Error> {
     let mut vertex = vec![];
     let strings = String::from_utf8(line.clone())?;
@@ -150,6 +153,27 @@ pub fn parse_vertex(line: Vec<u8>) -> Result<Vec<f32>, Error> {
     Ok(vertex)
 }
 
-// TODO:
-// pub fn parse_face() -> Result<Vec<u8>, Error> {
-// }
+/*
+ * Takes data of line and returns Vec<Index> data and the number of indices.
+ * Like:
+ *      ([Index(1, 1, 1), Index(2, 2, 2), Index(3, 3, 3)], 3)
+ */
+pub fn parse_face(line: Vec<u8>) -> Result<(Vec<Index>, u32), Error> {
+    let mut indices = vec![];
+    let strings = String::from_utf8(line.clone())?;
+    let string: Vec<&str> = strings.split(' ').collect();
+    let (mut v, mut t, mut n) = (0, 0, 0);
+    for i in 1..string.len() {
+        let components: Vec<&str> = string[i].split('/').collect();
+        match components.len() {
+            1 => v = components[0].parse()?,
+            2 => { v = components[0].parse()?; t = components[1].parse()?; },
+            3 => { v = components[0].parse()?; t = components[1].parse()?; n = components[2].parse()?; },
+            _ => return Err(Error::InvalidComponents),
+        }
+
+        indices.push(Index::new(v, t, n));
+    }
+
+    Ok((indices, string.len() as u32 - 1))
+}

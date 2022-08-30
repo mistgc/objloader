@@ -38,10 +38,23 @@ pub struct Material {
     map_bump:               Texture,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct Index {
     v:                      u32,
     t:                      u32,
     n:                      u32,
+}
+
+impl Index {
+    pub fn new(v: u32, t: u32, n: u32) -> Self {
+        Self { v, t, n }
+    }
+}
+
+impl Default for Index {
+    fn default() -> Self {
+        Self { v: 0, t: 0, n: 0 }
+    }
 }
 
 pub struct Group {

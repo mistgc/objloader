@@ -3,7 +3,8 @@ use std::{string, num};
 #[derive(Debug)]
 pub enum Error {
     IndexOutOfBound,
-    ParseingPositionError,
+    ParsePositionError,
+    InvalidComponents,
 
     FromUtf8Error,
 
