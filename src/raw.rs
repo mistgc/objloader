@@ -2,6 +2,7 @@
 #[allow(non_snake_case)]
 #[allow(unused)]
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct Texture {
     /* Texture name from .mtl file */
     name:                   String,
@@ -10,6 +11,7 @@ pub struct Texture {
     path:                   String,
 }
 
+#[derive(Debug, PartialEq)]
 pub struct Material {
     /* Material name */
     name:                   String,
@@ -57,6 +59,7 @@ impl Default for Index {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct Group {
     /* Group name */
     name:                   String,
@@ -69,4 +72,15 @@ pub struct Group {
 
     /* First index in Mesh indices array */
     index_offset:           u32,
+}
+
+impl Group {
+    pub fn new(name: String, face_count: u32, face_offset: u32, index_offset: u32) -> Self {
+        Self {
+            name,
+            face_count,
+            face_offset,
+            index_offset
+        }
+    }
 }

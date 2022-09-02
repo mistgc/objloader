@@ -5,11 +5,18 @@ pub enum Error {
     IndexOutOfBound,
     ParsePositionError,
     InvalidComponents,
+    OpenFileFailed,
 
     FromUtf8Error,
 
     ParseIntError,
     ParseFloatError,
+}
+
+impl From<std::io::Error> for Error {
+    fn from(_: std::io::Error) -> Self {
+        Self::OpenFileFailed
+    }
 }
 
 impl From<string::FromUtf8Error> for Error {

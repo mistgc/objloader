@@ -3,7 +3,11 @@
 
 use crate::common;
 use crate::raw::*;
+use crate::error::Error;
+use crate::utils;
+use crate::utils::MoreStrMethod;
 
+#[derive(Debug)]
 pub struct Mesh {
     /* Vertex data */
     position_count:         u32,
@@ -66,11 +70,69 @@ impl Mesh {
         Self::default()
     }
 
-    pub fn from_file() -> Self {
-        let mesh = Self::new();
+    pub fn from_file<T: AsRef<str>>(path: T) -> Result<Self, Error> {
+        let mut mesh = Self::new();
+        /* Add dummy data because index of vertex is beginning by 1 instead of 0. */
+        mesh.positions.push(0.);
+        mesh.positions.push(0.);
+        mesh.positions.push(0.);
+
+        mesh.texcoords.push(0.);
+        mesh.texcoords.push(0.);
+
+        mesh.normals.push(0.);
+        mesh.normals.push(0.);
+        mesh.normals.push(1.);
+
+        let mut data = common::file_read(path)?;
 
         // TODO: load data from file
 
-        mesh
+        mesh.position_count = mesh.positions.len() as u32 / 3;
+        mesh.texcoord_count = mesh.texcoords.len() as u32 / 2;
+        mesh.normal_count = mesh.normals.len() as u32 / 3;
+
+        Ok(mesh)
+    }
+
+    fn parse_file(&mut self, data: &mut Vec<u8>) -> Result<(), Error>{
+        let mut index = 0;
+
+        loop {
+            let line = data.read_line(&mut index)?;
+            match line[0] as char {
+                'v' => {
+                    match line[1] as char {
+                        ' ' => {
+                            let vertices = utils::parse_vertex(line)?;
+                            for v in vertices {
+                                self.positions.push(v);
+                            }
+                        },
+                        't' => {
+                            let vertices = utils::parse_vertex(line)?;
+                            for v in vertices {
+                                self.texcoords.push(v);
+                            }
+                        }
+                        'n' => {
+                            let vertices = utils::parse_vertex(line)?;
+                            for v in vertices {
+                                self.normals.push(v);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+                'f' => {
+                    let (indices, count) = utils::parse_face(line)?;
+                    for index in indices {
+                        self.indices.push(index);
+                    }
+                    self.index_count += count;
+                }
+                _ => {}
+            }
+        }
     }
 }
