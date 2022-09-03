@@ -85,21 +85,29 @@ impl Mesh {
         mesh.normals.push(1.);
 
         let mut data = common::file_read(path)?;
-
-        // TODO: load data from file
+        mesh.parse_file(&mut data)?;
 
         mesh.position_count = mesh.positions.len() as u32 / 3;
         mesh.texcoord_count = mesh.texcoords.len() as u32 / 2;
         mesh.normal_count = mesh.normals.len() as u32 / 3;
+        mesh.face_count = mesh.face_vertices.len() as u32;
+        mesh.index_count = mesh.indices.len() as u32;
+        mesh.material_count = mesh.materials.len() as u32;
+        mesh.object_count = mesh.objects.len() as u32;
+        mesh.group_count = mesh.groups.len() as u32;
 
         Ok(mesh)
     }
 
     fn parse_file(&mut self, data: &mut Vec<u8>) -> Result<(), Error>{
         let mut index = 0;
+        let mut face_count = 0;
 
         loop {
-            let line = data.read_line(&mut index)?;
+            let line = data.read_valid_line(&mut index)?;
+            if line.len() == 0 {
+                break;
+            }
             match line[0] as char {
                 'v' => {
                     match line[1] as char {
@@ -130,9 +138,16 @@ impl Mesh {
                         self.indices.push(index);
                     }
                     self.index_count += count;
+                    face_count += 1;
+                }
+                'g' => {
+                    let group = utils::parse_group(line, face_count, self.face_vertices.len() as u32, self.indices.len() as u32)?;
+                    self.groups.push(group);
+                    face_count = 0;
                 }
                 _ => {}
             }
         }
+        Ok(())
     }
 }

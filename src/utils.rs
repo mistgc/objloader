@@ -147,9 +147,9 @@ pub fn parse_vertex(line: Vec<u8>) -> Result<Vec<f32>, Error> {
     let mut vertex = vec![];
     let strings = String::from_utf8(line.clone())?;
     let string: Vec<&str> = strings.split(' ').collect();
-    vertex.push(string[1].parse()?);
-    vertex.push(string[2].parse()?);
-    vertex.push(string[3].parse()?);
+    for i in 1..string.len() {
+        vertex.push(string[i].parse()?);
+    }
     Ok(vertex)
 }
 
@@ -176,4 +176,10 @@ pub fn parse_face(line: Vec<u8>) -> Result<(Vec<Index>, u32), Error> {
     }
 
     Ok((indices, string.len() as u32 - 1))
+}
+
+pub fn parse_group(line: Vec<u8>, face_count: u32, face_offset: u32, index_offset: u32) -> Result<Group, Error> {
+    let strings = String::from_utf8(line.clone())?;
+    let string: Vec<&str> = strings.split(' ').collect();
+    Ok(Group::new(string[1].to_string(), face_count, face_offset, index_offset))
 }

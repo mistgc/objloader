@@ -12,7 +12,9 @@ Test Test Test...
 
 
 
-!!!"
+!!!
+aaa
+bbb"
     .to_string();
     let mut index = 0;
     let line = String::from_utf8(lines.as_bytes().to_vec().read_line(&mut index).unwrap()).unwrap();
@@ -23,6 +25,10 @@ Test Test Test...
     assert_eq!("123456...", line);
     let line = String::from_utf8(lines.as_bytes().to_vec().read_valid_line(&mut index).unwrap()).unwrap();
     assert_eq!("!!!", line);
+    let line = String::from_utf8(lines.as_bytes().to_vec().read_valid_line(&mut index).unwrap()).unwrap();
+    assert_eq!("aaa", line);
+    let line = String::from_utf8(lines.as_bytes().to_vec().read_valid_line(&mut index).unwrap()).unwrap();
+    assert_eq!("bbb", line);
 }
 
 #[test]
