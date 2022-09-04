@@ -84,8 +84,15 @@ impl Mesh {
         mesh.normals.push(0.);
         mesh.normals.push(1.);
 
-        let mut data = common::file_read(path)?;
-        mesh.parse_file(&mut data)?;
+        let mut data = common::file_read(path.as_ref())?;
+        let mut base = String::new();
+        for i in path.as_ref().len()..0 {
+            if path.as_ref().as_bytes()[i] as char == '/' {
+                base = path.as_ref()[0..i].to_string();
+                break;
+            }
+        }
+        mesh.parse_file(&mut data, base)?;
 
         mesh.position_count = mesh.positions.len() as u32 / 3;
         mesh.texcoord_count = mesh.texcoords.len() as u32 / 2;
@@ -99,9 +106,27 @@ impl Mesh {
         Ok(mesh)
     }
 
-    fn parse_file(&mut self, data: &mut Vec<u8>) -> Result<(), Error>{
+    fn usemtl(&mut self, line: Vec<u8>) -> Result<usize, Error> {
+        let strings = String::from_utf8(line)?;
+        let string: Vec<&str> = strings.split(' ').collect();
+        let mtl_name = string[1].to_string();
+        /* Find material if it has existed. */
+        for (i, m) in self.materials.iter().enumerate() {
+            if mtl_name == m.name {
+                return Ok(i);
+            }
+        }
+        /* Create a new material with default values if it doesn't found. */
+        let mtl = Material::default();
+        self.materials.push(mtl);
+        Ok(self.materials.len() - 1)
+    }
+
+    fn parse_file<T: AsRef<str>>(&mut self, data: &mut Vec<u8>, base: T) -> Result<(), Error>{
         let mut index = 0;
-        let mut face_count = 0;
+        let mut group_face_count = 0;
+        let mut object_face_count = 0;
+        let mut current_mtl_index = 0;
 
         loop {
             let line = data.read_valid_line(&mut index)?;
@@ -138,12 +163,39 @@ impl Mesh {
                         self.indices.push(index);
                     }
                     self.index_count += count;
-                    face_count += 1;
+                    self.face_vertices.push(count);
+                    self.face_materials.push(current_mtl_index as u32);
+                    group_face_count += 1;
+                    object_face_count += 1;
                 }
                 'g' => {
-                    let group = utils::parse_group(line, face_count, self.face_vertices.len() as u32, self.indices.len() as u32)?;
+                    let group = utils::parse_group(line, group_face_count, self.face_vertices.len() as u32, self.indices.len() as u32)?;
                     self.groups.push(group);
-                    face_count = 0;
+                    /* Reset face count to 0 */
+                    group_face_count = 0;
+                },
+                'o' => {
+                    let object = utils::parse_object(line, object_face_count, self.face_vertices.len() as u32, self.indices.len() as u32)?;
+                    self.objects.push(object);
+                    /* Reset face count to 0 */
+                    object_face_count = 0;
+                }
+                'm' => {
+                    match (line[1] as char, line[2] as char, line[3] as char, line[4] as char, line[5] as char) {
+                        ('t', 'l', 'l', 'i', 'b') => {
+                            let mtl = Material::from_obj_line(line, base.as_ref())?;
+                            self.materials.push(mtl);
+                        }
+                        _ => {}
+                    }
+                }
+                'u' => {
+                    match (line[1] as char, line[2] as char, line[3] as char, line[4] as char, line[5] as char) {
+                        ('s', 'e', 'm', 't', 'l') => {
+                            current_mtl_index = self.usemtl(line)?;
+                        }
+                        _ => {}
+                    }
                 }
                 _ => {}
             }

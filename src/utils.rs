@@ -3,6 +3,12 @@
 use crate::error::Error;
 use crate::raw::*;
 
+#[cfg(not(target_os = "windows"))]
+pub const PATH_SEPARATOR: &str = "/";
+
+#[cfg(target_os = "windows")]
+pub const PATH_SEPARATOR: &str = "\\";
+
 pub trait MoreCharMethod {
     fn is_end_of_name(&self) -> bool;
 
@@ -115,7 +121,7 @@ impl MoreStrMethod for Vec<u8> {
 
     /*
      * Returns data of a line has text.
-     * It will skip all continous '\n'.
+     * It will skip all continuous '\n'.
      * The param 'index' is a state recording the current line needed reading.
      * And Returns data of the valid line whitin Ok(Vec<u8>),
      * otherwise returns Err(Error::IndexOutOfBound).
@@ -182,4 +188,13 @@ pub fn parse_group(line: Vec<u8>, face_count: u32, face_offset: u32, index_offse
     let strings = String::from_utf8(line.clone())?;
     let string: Vec<&str> = strings.split(' ').collect();
     Ok(Group::new(string[1].to_string(), face_count, face_offset, index_offset))
+}
+
+pub fn parse_object(line: Vec<u8>, face_count: u32, face_offset: u32, index_offset: u32) -> Result<Group, Error> {
+    let strings = String::from_utf8(line.clone())?;
+    let string: Vec<&str> = strings.split(' ').collect();
+    Ok(Group::new(string[1].to_string(), face_count, face_offset, index_offset))
+}
+
+pub fn parse_usemtl() {
 }
