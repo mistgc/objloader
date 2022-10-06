@@ -1,5 +1,4 @@
 #[allow(dead_code)]
-#[allow(non_snake_case)]
 #[allow(unused)]
 
 use crate::utils::{ PATH_SEPARATOR, MoreStrMethod };
@@ -33,6 +32,7 @@ impl Default for Texture {
     }
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, PartialEq)]
 pub struct Material {
     /* Material name */
@@ -62,6 +62,7 @@ pub struct Material {
     map_bump:               Texture,
 }
 
+#[allow(non_snake_case)]
 impl Material {
     fn parse_single(line: Vec<u8>) -> Result<f32, Error> {
         let strings = String::from_utf8(line)?;
@@ -96,6 +97,10 @@ impl Material {
         Ok(Texture::new(name, path))
     }
 
+    /*
+     * Takes data of line and the base (parent) path and returns
+     * a new material.
+     */
     pub fn from_obj_line<T: AsRef<str>>(line: Vec<u8>, base: T) -> Result<Self, Error> {
         let strings = String::from_utf8(line)?;
         let string: Vec<&str> = strings.split(' ').collect();

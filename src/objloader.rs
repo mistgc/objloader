@@ -86,7 +86,7 @@ impl Mesh {
 
         let mut data = common::file_read(path.as_ref())?;
         let mut base = String::new();
-        for i in path.as_ref().len()..0 {
+        for i in (0..path.as_ref().len()).rev() {
             if path.as_ref().as_bytes()[i] as char == '/' {
                 base = path.as_ref()[0..i].to_string();
                 break;
@@ -106,6 +106,11 @@ impl Mesh {
         Ok(mesh)
     }
 
+    /*
+     * Takes data of line and returns the index of the material,
+     * but if the material isn't exsiting, create a new material
+     * and returns it's index.
+     */
     fn usemtl(&mut self, line: Vec<u8>) -> Result<usize, Error> {
         let strings = String::from_utf8(line)?;
         let string: Vec<&str> = strings.split(' ').collect();
